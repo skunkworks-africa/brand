@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://brand.skunkworks.africa/sitemap.xml

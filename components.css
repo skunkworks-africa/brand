@@ -1,0 +1,39 @@
+/* Import tokens.css before this file. Framework-independent native HTML. */
+.sk-button { display:inline-flex; align-items:center; justify-content:space-between; gap:24px; min-height:48px; padding:12px 20px; border:1px solid var(--sk-action); border-radius:var(--sk-radius); background:var(--sk-action); color:var(--sk-on-action); font:600 14px/1.4 var(--sk-font); text-decoration:none; cursor:pointer; transition:opacity var(--sk-duration) var(--sk-ease); }
+.sk-button:hover { opacity:.8; }
+.sk-button.secondary { background:transparent; color:var(--sk-text); }
+.sk-button.ghost { background:transparent; color:var(--sk-text); border-color:transparent; }
+.sk-button.danger { background:var(--sk-danger); border-color:var(--sk-danger); color:var(--sk-bg); }
+.sk-button:disabled { opacity:.45; cursor:not-allowed; }
+:where(a,button,input,select,textarea,summary):focus-visible { outline:3px solid var(--sk-focus); outline-offset:3px; }
+.sk-field { display:grid; gap:8px; max-width:440px; font-size:14px; margin-bottom:20px; }
+.sk-field label { font-weight:600; }
+.sk-input { width:100%; min-height:48px; border:1px solid var(--sk-control-border); border-radius:4px; padding:12px; background:var(--sk-bg); color:var(--sk-text); font:inherit; }
+.sk-hint { color:var(--sk-muted); font-size:13px; }
+.sk-error { color:var(--sk-danger); font-size:13px; }
+.sk-input[aria-invalid='true'] { border:2px solid var(--sk-danger); }
+.sk-check { display:flex; align-items:center; gap:12px; min-height:44px; font-size:14px; }
+.sk-check input { width:20px; height:20px; accent-color:var(--sk-action); }
+.sk-badge { display:inline-flex; gap:6px; align-items:center; padding:5px 10px; border:1px solid var(--sk-border); border-radius:30px; font:12px/1.4 var(--sk-mono); background:var(--sk-surface); }
+.sk-notice { display:flex; gap:16px; border:1px solid var(--sk-border); border-left:4px solid var(--sk-text); padding:20px; background:var(--sk-layer); }
+.sk-notice.success { border-left-color:var(--sk-success); }
+.sk-notice.error { border-left-color:var(--sk-danger); }
+.sk-notice p { margin:4px 0 0; }
+.sk-accordion { border-top:1px solid var(--sk-border); }
+.sk-accordion:last-of-type { border-bottom:1px solid var(--sk-border); }
+.sk-accordion summary { cursor:pointer; padding:20px 4px; font-weight:600; }
+.sk-accordion > div { padding:0 24px 24px; }
+.sk-tabs { display:flex; gap:4px; border-bottom:1px solid var(--sk-border); overflow-x:auto; }
+.sk-tabs button { padding:16px 24px; background:transparent; color:var(--sk-muted); border:0; border-bottom:3px solid transparent; font:600 14px var(--sk-font); cursor:pointer; white-space:nowrap; }
+.sk-tabs button[aria-selected='true'] { color:var(--sk-text); border-bottom-color:var(--sk-text); }
+.sk-panel { padding:24px 0; }
+.sk-table-wrap { overflow-x:auto; }
+.sk-table { width:100%; border-collapse:collapse; font-size:14px; text-align:left; }
+.sk-table caption { text-align:left; font-weight:600; padding-bottom:16px; }
+.sk-table th,.sk-table td { padding:16px; border-bottom:1px solid var(--sk-border); }
+.sk-table th { background:var(--sk-surface); }
+.sk-card { padding:24px; border:1px solid var(--sk-border); background:var(--sk-bg); border-radius:var(--sk-radius); }
+.sk-dialog { width:min(560px,calc(100% - 32px)); max-height:85dvh; overflow:auto; padding:32px; background:var(--sk-bg); color:var(--sk-text); border:1px solid var(--sk-border); border-radius:12px; }
+.sk-dialog::backdrop { background:#0009; }
+.sk-dialog h2 { margin:8px 0 16px; font-size:28px; letter-spacing:-1px; }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }
