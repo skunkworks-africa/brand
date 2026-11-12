@@ -1,0 +1,14 @@
+{
+  "name": "skunkworks-design-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Skunkworks Africa design system and documentation",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "node scripts/check.mjs",
+    "start": "node scripts/serve.mjs",
+    "test": "playwright test"
+  },
+  "devDependencies": {"@playwright/test": "1.56.1", "axe-core": "4.10.3"}
+}
