@@ -8,6 +8,9 @@ test('search finds components, handles no results and opens direct links',async(
 test('navigation filter and legacy bookmarks work',async({page})=>{
  await page.goto('/');await requiredOnly(page);await page.locator('#desktop-find').fill('accordion');await expect(page.locator('.sidebar .nav-group a:visible')).toHaveCount(1);await page.locator('.sidebar').getByRole('link',{name:'Accordion',exact:true}).click();await expect(page.getByRole('heading',{level:1})).toContainText('Reveal');await page.goto('/#logos');await expect(page).toHaveURL(/\/logos\//);
 });
+test('Escape closes search with a populated search input',async({page})=>{
+ await page.goto('/');await requiredOnly(page);await page.getByRole('button',{name:'Search the design system'}).click();await page.locator('#global-search').fill('buttons');await page.keyboard.press('Escape');await expect(page.locator('#search-dialog')).toBeHidden();await expect(page.getByRole('button',{name:'Search the design system'})).toBeFocused();
+});
 test('theme persists and swaps the approved logo',async({page})=>{
  await page.emulateMedia({colorScheme:'light'});await page.goto('/');await requiredOnly(page);await page.getByRole('button',{name:'Switch to dark theme'}).click();await expect(page.locator('html')).toHaveAttribute('data-theme','dark');await expect(page.locator('.mark-dark')).toBeVisible();await page.reload();await expect(page.locator('html')).toHaveAttribute('data-theme','dark');await page.getByRole('button',{name:'Switch to light theme'}).click();await expect(page.locator('.mark-light')).toBeVisible();
 });
