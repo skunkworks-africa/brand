@@ -5,7 +5,7 @@ import {pages} from '../content.mjs';
 const root=fileURLToPath(new URL('..',import.meta.url));
 const routes=['',...pages.map(p=>p.slug+'/')];
 for(const path of routes){
- const html=(await readFile(root+path+'index.html','utf8')).replace(/<pre>[\s\S]*?<\/pre>/g,'');
+ const html=(await readFile(root+path+'index.html','utf8')).replace(/<pre\b[^>]*>[\s\S]*?<\/pre>/g,'');
  assert.equal((html.match(/<h1[ >]/g)||[]).length,1,path+' must have one h1');
  assert(html.includes('Skip to content'));assert(html.includes('lang="en-ZA"'));
  const ids=[...html.matchAll(/\sid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length,'Duplicate IDs on '+path);

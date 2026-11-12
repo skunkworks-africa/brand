@@ -22,7 +22,7 @@ const light=parse(css.split(":root[data-theme='dark']")[0]);
 const dark={...light,...parse(css.split(":root[data-theme='dark']")[1].split('@media')[0])};
 const tokens={version:'1.0.0',source:'tokens.css',themes:{light,dark}};
 await writeFile(root+'tokens.json',JSON.stringify(tokens,null,2)+'\n');
-const table=`<div class="sk-table-wrap"><table class="sk-table"><caption>Token values generated from tokens.css</caption><thead><tr><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody>${Object.entries(light).map(([k,v])=>`<tr><th scope="row"><code>--sk-${k}</code></th><td><code>${escape(v)}</code></td><td><code>${escape(dark[k])}</code></td></tr>`).join('')}</tbody></table></div>`;
+const table=`<div class="sk-table-wrap" tabindex="0" role="region" aria-label="Scrollable table"><table class="sk-table"><caption>Token values generated from tokens.css</caption><thead><tr><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody>${Object.entries(light).map(([k,v])=>`<tr><th scope="row"><code>--sk-${k}</code></th><td><code>${escape(v)}</code></td><td><code>${escape(dark[k])}</code></td></tr>`).join('')}</tbody></table></div>`;
 await writeFile(root+'index.html',shell('home','Home','The shared design language for Skunkworks Africa. Explore foundations, reusable components and experiences built with precision.',home()));
 for(const [i,p] of pages.entries()){
  await mkdir(root+p.slug,{recursive:true});
