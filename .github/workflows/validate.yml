@@ -28,7 +28,7 @@ jobs:
 
       - name: Capture generated npm lockfile for deterministic CI migration
         uses: actions/upload-artifact@v4
-        if: success()
+        if: always()
         with:
           name: dependency-lockfile-preview
           path: package-lock.json
