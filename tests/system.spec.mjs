@@ -48,5 +48,5 @@ test('search indexes concrete design token identifiers',async({page})=>{
  await page.goto('/');await requiredOnly(page);
  await page.getByRole('button',{name:'Search the design system'}).click();
  await page.getByRole('searchbox',{name:'Search documentation'}).fill('--sk-danger');
- await expect(page.locator('.search-result').first()).toContainText('Tokens');
+ await expect(page.locator('.search-result').first()).toHaveAttribute('href','/tokens/');
 });
