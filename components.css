@@ -8,7 +8,7 @@
 :where(a,button,input,select,textarea,summary):focus-visible { outline:3px solid var(--sk-focus); outline-offset:3px; }
 .sk-field { display:grid; gap:8px; max-width:440px; font-size:14px; margin-bottom:20px; }
 .sk-field label { font-weight:600; }
-.sk-input { width:100%; min-height:48px; border:1px solid var(--sk-control-border); border-radius:4px; padding:12px; background:var(--sk-bg); color:var(--sk-text); font:inherit; }
+.sk-input { box-sizing:border-box; width:100%; min-height:48px; border:1px solid var(--sk-control-border); border-radius:4px; padding:12px; background:var(--sk-bg); color:var(--sk-text); font:inherit; }
 .sk-hint { color:var(--sk-muted); font-size:13px; }
 .sk-error { color:var(--sk-danger); font-size:13px; }
 .sk-input[aria-invalid='true'] { border:2px solid var(--sk-danger); }
