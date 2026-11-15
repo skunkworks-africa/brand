@@ -1,0 +1,28 @@
+name: Brand pilot quality
+on:
+  workflow_call:
+    inputs:
+      profile:
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  brand-pilot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify approved token snapshot
+        run: echo '501a722bd4556929db101341a46440f89ce27567b38e895c1693faeef78716d9  vendor/skunkworks/tokens-1.0.0.css' | sha256sum --check
+      - name: Run site quality checks
+        env:
+          PROFILE: ${{ inputs.profile }}
+        run: |
+          case "$PROFILE" in
+            corporate) node scripts/validate-site.mjs && node scripts/validate-theme.mjs && node scripts/validate-team.mjs ;;
+            theme) node scripts/validate.mjs ;;
+            *) echo "Unknown profile"; exit 1 ;;
+          esac
