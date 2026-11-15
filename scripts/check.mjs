@@ -22,5 +22,9 @@ for(const [name,t] of Object.entries(tokens.themes)){
  for(const [fg,bg,min] of [['text','bg',4.5],['muted','bg',4.5],['muted','surface',4.5],['on-action','action',4.5],['control-border','bg',3],['focus','bg',3],['danger','bg',4.5],['success','bg',4.5]])assert(contrast(t[fg],t[bg])>=min,`${name} contrast: ${fg}/${bg}`);
 }
 const search=JSON.parse(await readFile(root+'search-index.json','utf8'));assert.equal(search.length,pages.length);
+const tokenSearchEntry=search.find(item=>item.url==='/tokens/');
+assert(tokenSearchEntry,'Token reference missing from search index');
+for(const token of ['--sk-danger','--sk-space-16','--sk-control-border'])
+ assert(tokenSearchEntry.text.includes(token),'Token not searchable: '+token);
 assert.equal((await readFile(root+'CNAME','utf8')).trim(),'brand.skunkworks.africa');
 console.log(`PASS: ${routes.length} pages, local links, unique IDs, ARIA references, search coverage and semantic contrast in both themes.`);
