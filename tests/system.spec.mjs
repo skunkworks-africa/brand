@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {readFile} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 async function requiredOnly(page){await page.getByRole('button',{name:'Required only',exact:true}).first().click();}
@@ -34,4 +35,18 @@ for(const width of [320,390,768,1280,1920])test(`responsive layout and mobile na
 });
 for(const theme of ['light','dark'])test(`automated accessibility checks in ${theme} theme`,async({page})=>{
  await page.emulateMedia({colorScheme:theme});for(const route of ['/','/forms/','/tabs/','/tables/','/colour/','/tokens/']){await page.goto(route);if(await page.locator('#consent-banner').isVisible())await requiredOnly(page);await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});const issues=await page.evaluate(async()=>{const r=await axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return r.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)}));});expect(issues,route).toEqual([]);}
+});
+
+test('standalone components keep input controls within their container',async({page})=>{
+ const tokens=await readFile(new URL('../tokens.css',import.meta.url),'utf8');
+ const components=await readFile(new URL('../components.css',import.meta.url),'utf8');
+ await page.setContent('<style>'+tokens+'\n'+components+'</style><div id="host" style="width:280px"><input class="sk-input" aria-label="Standalone input"><textarea class="sk-input" aria-label="Standalone textarea"></textarea></div>');
+ const widths=await page.evaluate(()=>({host:document.querySelector('#host').getBoundingClientRect().width,controls:[...document.querySelectorAll('.sk-input')].map(el=>el.getBoundingClientRect().width)}));
+ for(const width of widths.controls)expect(width).toBeLessThanOrEqual(widths.host);
+});
+test('search indexes concrete design token identifiers',async({page})=>{
+ await page.goto('/');await requiredOnly(page);
+ await page.getByRole('button',{name:'Search the design system'}).click();
+ await page.getByRole('searchbox',{name:'Search documentation'}).fill('--sk-danger');
+ await expect(page.locator('.search-result').first()).toHaveAttribute('href','/tokens/');
 });
