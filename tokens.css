@@ -11,6 +11,16 @@
   --sk-space-1: 4px; --sk-space-2: 8px; --sk-space-3: 12px; --sk-space-4: 16px;
   --sk-space-6: 24px; --sk-space-8: 32px; --sk-space-12: 48px; --sk-space-16: 64px;
   --sk-radius: 8px; --sk-duration: 160ms; --sk-ease: cubic-bezier(.2,0,.2,1);
+
+  /* Skunkworks Academy brand colours, shared across themes. */
+  --sk-academy-ink-navy: #03033A;
+  --sk-academy-skunk-blue: #1E6BD0;
+  --sk-academy-signal-orange: #F24208;
+  --sk-academy-white: #FFFFFF;
+  --sk-academy-off-white: #F7F9FC;
+  --sk-academy-graphite: #15171A;
+  --sk-academy-steel-gray: #D8DEE8;
+  --sk-academy-slate-text: #5A6472;
 }
 :root[data-theme='dark'] {
   color-scheme: dark;
