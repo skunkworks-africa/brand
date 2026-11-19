@@ -7,23 +7,23 @@
 
 .code-block pre:focus-visible,.sk-table-wrap:focus-visible{outline:3px solid var(--sk-focus);outline-offset:3px}
 
-.academy-swatches,
-.academy-ratio-key {
+.group-swatches,
+.group-ratio-key {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 168px), 1fr));
   gap: var(--sk-space-3);
 }
-.academy-swatches .swatch {
+.group-swatches .swatch {
   width: 100%;
 }
-.academy-swatches .swatch-rgb {
+.group-swatches .swatch-rgb {
   color: var(--sk-muted);
 }
-.doc-body .academy-swatches p {
+.doc-body .group-swatches p {
   margin: var(--sk-space-2) 0 0;
   font-size: .875rem;
 }
-.academy-ratio-bar {
+.group-ratio-bar {
   display: flex;
   height: var(--sk-space-3);
   margin-bottom: var(--sk-space-4);
@@ -31,13 +31,13 @@
   border: 1px solid var(--sk-border);
   border-radius: var(--sk-radius);
 }
-.academy-ratio-key {
+.group-ratio-key {
   margin: 0;
 }
-.academy-ratio-key dt {
+.group-ratio-key dt {
   font-weight: 600;
 }
-.academy-ratio-key dd {
+.group-ratio-key dd {
   margin: var(--sk-space-1) 0 0;
   color: var(--sk-muted);
   font-size: .875rem;

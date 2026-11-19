@@ -1,6 +1,6 @@
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
-import {pages,groups,renderAcademySwatches} from './content.mjs';
+import {pages,groups,renderGroupSwatches} from './content.mjs';
 const root=fileURLToPath(new URL('.',import.meta.url));
 const escape=s=>s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const icon=(name)=>{
@@ -19,30 +19,31 @@ function shell(slug,title,description,body){return `<!doctype html><html lang="e
 const css=await readFile(root+'tokens.css','utf8');
 function parse(block){return Object.fromEntries([...block.matchAll(/--sk-([\w-]+):\s*([^;]+);/g)].map(m=>[m[1],m[2].trim()]));}
 const light={};
-const academy={};
+const groupPalette={};
+const groupPrefix='group-';
 const academyPrefix='academy-';
 for(const [name,value] of Object.entries(parse(css.split(":root[data-theme='dark']")[0]))){
-  if(name.startsWith(academyPrefix)) academy[name.slice(academyPrefix.length)]=value;
-  else light[name]=value;
+  if(name.startsWith(groupPrefix)) groupPalette[name.slice(groupPrefix.length)]=value;
+  else if(!name.startsWith(academyPrefix)) light[name]=value;
 }
 const dark={...light,...parse(css.split(":root[data-theme='dark']")[1].split('@media')[0])};
-const tokens={version:'1.0.0',source:'tokens.css',themes:{light,dark},palettes:{academy}};
+const tokens={version:'1.0.0',source:'tokens.css',themes:{light,dark},palettes:{group:groupPalette,academy:groupPalette}};
 await writeFile(root+'tokens.json',JSON.stringify(tokens,null,2)+'\n');
 const table=`<div class="sk-table-wrap" tabindex="0" role="region" aria-label="Scrollable table"><table class="sk-table"><caption>Token values generated from tokens.css</caption><thead><tr><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody>${Object.entries(light).map(([k,v])=>`<tr><th scope="row"><code>--sk-${k}</code></th><td><code>${escape(v)}</code></td><td><code>${escape(dark[k])}</code></td></tr>`).join('')}</tbody></table></div>`;
-const academyTable=`<div class="sk-table-wrap" tabindex="0" role="region" aria-label="Scrollable Academy palette tokens">
+const groupTable=`<div class="sk-table-wrap" tabindex="0" role="region" aria-label="Scrollable group palette tokens">
   <table class="sk-table">
-    <caption>Fixed Academy colour values</caption>
-    <thead><tr><th scope="col">CSS custom property</th><th scope="col">Hex value</th></tr></thead>
-    <tbody>${Object.entries(academy).map(([name,value])=>`<tr><th scope="row"><code>--sk-${academyPrefix}${name}</code></th><td><code>${escape(value)}</code></td></tr>`).join('')}</tbody>
+    <caption>Fixed Skunkworks Group colour values</caption>
+    <thead><tr><th scope="col">CSS custom property</th><th scope="col">Hex value</th><th scope="col">Compatibility alias</th></tr></thead>
+    <tbody>${Object.entries(groupPalette).map(([name,value])=>`<tr><th scope="row"><code>--sk-${groupPrefix}${name}</code></th><td><code>${escape(value)}</code></td><td><code>--sk-${academyPrefix}${name}</code></td></tr>`).join('')}</tbody>
   </table>
 </div>`;
-const academySwatches=renderAcademySwatches(academy);
+const groupSwatches=renderGroupSwatches(groupPalette);
 const renderedPages=pages.map(page=>({
   ...page,
   body:page.body
     .replace('<div id="token-reference"></div>',table)
-    .replace('<div id="academy-token-reference"></div>',academyTable)
-    .replace('<div id="academy-swatches"></div>',academySwatches)
+    .replace('<div id="group-token-reference"></div>',groupTable)
+    .replace('<div id="group-swatches"></div>',groupSwatches)
 }));
 await writeFile(root+'index.html',shell('home','Home','The shared design language for Skunkworks Africa. Explore foundations, reusable components and experiences built with precision.',home()));
 for(const [i,p] of renderedPages.entries()){

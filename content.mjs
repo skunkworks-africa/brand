@@ -8,35 +8,35 @@ function swatch(name,value,background=value,rgb){
   return `<button class="swatch" type="button" data-copy="${value}"><span style="background:${background}"></span><strong>${name}</strong><code>${value}</code>${rgb ? `<code class="swatch-rgb">RGB ${rgb}</code>` : ''}<small>Copy value ↗</small></button>`;
 }
 
-const academyColourGroups=[
+const groupSwatchSections=[
   ['Primary colours', [
-    ['ink-navy','Ink Navy','Dark hero backgrounds, portals and learning management systems.'],
-    ['skunk-blue','Skunk Blue','Primary digital accent for calls to action, links and active states. Use the approved blue mark on dark surfaces.'],
+    ['ink-navy','Ink Navy','Dark hero backgrounds, navigation shells and product surfaces.'],
+    ['skunk-blue','Skunk Blue','Primary accent for calls to action, links, active states and approved blue marks.'],
     ['signal-orange','Signal Orange','Dividers, alerts, campaign accents and emphasis.'],
-    ['white','White','Open space, reversed marks, and document and course content surfaces.']
+    ['white','White','Open space, reversed marks, documents and content surfaces.']
   ]],
   ['Supporting neutrals', [
-    ['off-white','Off White','Secondary backgrounds for courses and documents.'],
+    ['off-white','Off White','Secondary backgrounds for websites, applications and documents.'],
     ['graphite','Graphite','Body text and dark interface surfaces.'],
     ['steel-gray','Steel Gray','Subtle dividers and decorative borders.'],
     ['slate-text','Slate Text','Secondary text on light surfaces.']
   ]]
 ];
 
-export function renderAcademySwatches(palette){
-  return academyColourGroups.map(([heading,colours])=>{
+export function renderGroupSwatches(palette){
+  return groupSwatchSections.map(([heading,colours])=>{
     const cards=colours.map(([token,name,usage])=>{
       const value=palette[token];
-      if (!/^#[\da-f]{6}$/i.test(value)) throw new Error(`Invalid Academy colour token --sk-academy-${token}`);
+      if (!/^#[\da-f]{6}$/i.test(value)) throw new Error(`Invalid group colour token --sk-group-${token}`);
       const rgb=value.slice(1).match(/../g).map(channel=>parseInt(channel,16)).join(', ');
-      return `<div>${swatch(name,value,`var(--sk-academy-${token})`,rgb)}<p>${usage}</p></div>`;
+      return `<div>${swatch(name,value,`var(--sk-group-${token})`,rgb)}<p>${usage}</p></div>`;
     }).join('');
-    return `<h3>${heading}</h3><div class="academy-swatches">${cards}</div>`;
+    return `<h3>${heading}</h3><div class="group-swatches">${cards}</div>`;
   }).join('');
 }
 
-const academyUsage=[
-  [70,'off-white','White / Off White','Main learning surfaces, course pages and proposal bodies.'],
+const groupUsage=[
+  [70,'off-white','White / Off White','Main website and app surfaces, documents and presentations.'],
   [20,'ink-navy','Ink Navy / Graphite','Text, dark interface surfaces and hero backgrounds.'],
   [8,'skunk-blue','Skunk Blue','Calls to action, links, active states and brand highlights.'],
   [2,'signal-orange','Signal Orange','Dividers, alerts and campaign accents.']
@@ -57,35 +57,36 @@ page('overview','One system. Every touchpoint.','The shared design language for 
  section('Choose your starting point',`<div class="link-grid">${link('designing','I design experiences')}${link('developing','I build interfaces')}${link('logos','I need brand assets')}${link('contributing','I want to contribute')}</div>`)+
  section('What is included in 1.0',`<p>Framework-independent CSS, semantic design tokens, native HTML component examples, accessible interaction scripts, documentation and GitHub Pages delivery. Each example includes copyable source.</p><p>Applications adopt these resources deliberately. Publishing this site does not automatically update other Skunkworks properties.</p>`));
 page('designing','Start with intent.','A practical workflow for creating recognisably Skunkworks experiences.',
- guide('A design workflow',['Define the person, task, environment and measurable outcome before drawing screens.','Choose the existing navigation, sign-in or learning pattern that matches the journey.','Compose with the spacing scale and semantic colour roles. Design both themes together.','Use approved logos and reusable components before proposing a new variant.','Prototype error, loading, empty, success and offline states. Review with keyboard and mobile users.','Hand over token names, responsive behaviour, content and acceptance criteria with the design.'])+
+ guide('A design workflow',['Define the person, task, environment and measurable outcome before drawing screens.','Choose the existing navigation, sign-in or learning pattern that matches the journey.','Use the <a href="/colour/#group-palette">Skunkworks Group palette</a> for brand colours. Compose with the spacing scale and semantic colour roles. Design both themes together.','Use approved logos and reusable components before proposing a new variant.','Prototype error, loading, empty, success and offline states. Review with keyboard and mobile users.','Hand over token names, responsive behaviour, content and acceptance criteria with the design.'])+
  section('A useful handoff',`<p>Include the task flow, screen sizes, component states and real copy. Reference a release number so engineers can reproduce the design. Any new component needs an owner and an accessibility review.</p><div class="link-grid">${link('layout','Explore layout')}${link('components','Browse components')}${link('accessibility','Review accessibility')}${link('downloads','Get source resources')}</div>`));
 page('developing','Build on shared foundations.','Use the design system in any framework, or with plain HTML. No runtime dependency is required for the styles.',
- section('1. Add the styles',`<p>Download and vendor a reviewed release into your application. Load tokens before components. The documentation shell styles are separate from the reusable UI styles.</p>${code('<link rel="stylesheet" href="/vendor/skunkworks/tokens.css">\n<link rel="stylesheet" href="/vendor/skunkworks/components.css">\n<script src="/vendor/skunkworks/components.js" defer></script>')}`)+
+ section('1. Add the styles',`<p>Download and vendor a reviewed release into your application. Load tokens before components. The documentation shell styles are separate from the reusable UI styles.</p>${code('<link rel="stylesheet" href="/vendor/skunkworks/tokens.css">\n<link rel="stylesheet" href="/vendor/skunkworks/components.css">\n<script src="/vendor/skunkworks/components.js" defer></script>')}<p>Map the <a href="/tokens/#group-tokens">Skunkworks Group colour tokens</a> to semantic roles in your application. Check the resulting foreground and background pairings in both themes.</p>`)+
  section('2. Use semantic markup',`${code('<a class="sk-button" href="/services/">Explore services <span aria-hidden="true">→</span></a>\n<button class="sk-button secondary" type="button">Save draft</button>')}<p>Use links for navigation and buttons for actions. CSS classes do not add semantics to an element.</p>`)+
  section('3. Choose a theme',`${code('<html lang="en-ZA" data-theme="dark">')}<p>Set <code>data-theme="light"</code> or <code>dark</code> on the root. Omit the attribute to follow the operating system. Save a preference only after the user chooses it.</p>`)+
  guide('4. Validate the integration',['Test the actual application with a keyboard and screen reader.','Check both themes, zoom to 200%, long labels and narrow viewports.','Keep authentication, permissions and persistence in your application services.','Pin the resource version and review release notes before upgrading.'])+
  section('Source and downloads','<p><a href="https://github.com/skunkworks-africa/brand">Explore the GitHub repository ↗</a> or use the <a href="/downloads/">downloadable resources</a>.</p>'));
 page('identity','Precision by design.','A singular identity for technology, intelligence, infrastructure and learning.',
  section('Built to move what’s next.',`<p>Our identity is confident, purposeful and deliberately restrained. Black and white give the work room to speak. A disciplined grid makes complex information easier to understand. Large typography introduces ideas; smaller type makes them useful.</p><div class="identity-specimen"><span>SW / AFRICA</span><strong>PRECISION<br>BY DESIGN.</strong><span>STRATEGY / ENGINEERING / INTELLIGENCE / LEARNING</span></div>`)+
- guide('Apply the identity',['Use approved master assets and preserve their proportions.','Keep core surfaces neutral. Introduce colour to communicate a documented state or data meaning.','Give important ideas space. Avoid ornamental gradients, effects and unnecessary animation.','Use the same tokens across regions; localise content, formats and examples to the audience.'])+section('Continue',link('logos','Explore approved logos')));
+ guide('Apply the identity',['Use approved master assets and preserve their proportions.','Use the <a href="/colour/#group-palette">Skunkworks Group palette</a> for brand colours across the group. Keep status and data colours consistent in meaning.','Give important ideas space. Avoid ornamental gradients, effects and unnecessary animation.','Use the same tokens across regions; localise content, formats and examples to the audience.'])+section('Continue',link('logos','Explore approved logos')));
 page('logos','Recognisable at every scale.','Approved master marks, purposeful placement and consistent clear space.',
  section('Logo library',`<div class="logo-grid"><article class="logo-card light"><img src="https://www.skunkworks.africa/assets/logo-black.png" alt="Black Skunkworks master mark"><h3>Primary / Dark mark</h3><p>For light surfaces.</p><a href="https://www.skunkworks.africa/assets/logo-black.svg">Open SVG ↗</a> <a href="https://www.skunkworks.africa/assets/logo-black.png">Open PNG ↗</a></article><article class="logo-card dark"><img src="https://www.skunkworks.africa/assets/logo-white.png" alt="White Skunkworks master mark"><h3>Inverse / Light mark</h3><p>For dark surfaces.</p><a href="https://www.skunkworks.africa/assets/logo-white.svg">Open SVG ↗</a> <a href="https://www.skunkworks.africa/assets/logo-white.png">Open PNG ↗</a></article></div><p class="caption">Master assets are served from the canonical corporate website. Use your browser’s save option for off-site files.</p>`)+
  guide('Usage',['Leave clear space at least one quarter of the rendered mark height on all sides. This is the initial digital layout rule for this release.','Use a minimum 32px rendered height in navigation. Inspect legibility at the actual display size.','Use the dark mark on light backgrounds and the inverse mark on dark backgrounds.','Do not stretch, rotate, crop, recolour, add shadows or rebuild the mark.','Provide concise alternative text when the image communicates identity. Use empty alt text when adjacent visible text already names Skunkworks.']));
 page('voice','Confident. Clear. Human.','Content is part of the interface. Help people act with understanding.',
  section('Write for the task','<p>Lead with what the person needs to know or do. Use active verbs, short sentences and familiar words. Explain a technical term when the audience may not know it.</p><div class="comparison"><article><h3>Use</h3><p>“Your application was saved. You can continue later.”</p><p>“We couldn’t upload the file. Try a PDF smaller than 10 MB.”</p></article><article><h3>Avoid</h3><p>“Submission transaction executed successfully.”</p><p>“An unexpected error occurred.”</p></article></div>')+
  guide('Content rules',['Use South African English for the default locale; use explicit regional formats where the audience needs them.','Write action labels that describe the result: “Save application”, “Download tokens”, “Create account”.','Use sentence case. Keep product names and acronyms consistent.','Pair errors with a concrete recovery action and retain the person’s input.','Use “Skunkie AI learning companion” for the Academy companion.','Provide reviewed European Portuguese (pt-PT), Afrikaans and other regional translations when required; never leave mixed-language screens.']));
-page('colour','Colour with a purpose.','The core palette, paired light and dark themes, and the Skunkworks Academy palette.',
+page('colour','Colour with a purpose.','The core palette, paired light and dark themes, and the shared Skunkworks Group palette.',
  section('The core palette',`<div class="swatch-grid">${[['White','#FFFFFF'],['Black','#000000'],['Surface','#F2F2F2'],['Text','#111111'],['Muted','#595959']].map(([name,value])=>swatch(name,value)).join('')}</div>`)+
- `<section class="doc-section" id="academy-palette">
-  <h2>Skunkworks Academy palette</h2>
-  <p>Use this palette for Academy learning experiences, course materials and branded documents. Select a swatch to copy its exact hex value.</p>
-  <div id="academy-swatches"></div>
+ `<section class="doc-section" id="group-palette">
+  <h2 id="academy-palette">Skunkworks Group palette</h2>
+  <p>Use this shared palette across Skunkworks group companies and brands. It applies to websites, applications, storefronts, learning experiences, presentations, documents and campaigns. Select a swatch to copy its exact hex value.</p>
+  <div id="group-swatches"></div>
   <h3>Colour usage ratio</h3>
-  <div class="academy-ratio-bar" aria-hidden="true">${academyUsage.map(([share,token])=>`<span style="width:${share}%;background:var(--sk-academy-${token})"></span>`).join('')}</div>
-  <dl class="academy-ratio-key">${academyUsage.map(([share,,name,usage])=>`<div><dt>${share}% · ${name}</dt><dd>${usage}</dd></div>`).join('')}</dl>
+  <p>Use these proportions as a starting point for light layouts.</p>
+  <div class="group-ratio-bar" aria-hidden="true">${groupUsage.map(([share,token])=>`<span style="width:${share}%;background:var(--sk-group-${token})"></span>`).join('')}</div>
+  <dl class="group-ratio-key">${groupUsage.map(([share,,name,usage])=>`<div><dt>${share}% · ${name}</dt><dd>${usage}</dd></div>`).join('')}</dl>
   <h3>Text and background pairings</h3>
   <p>Use White text on Ink Navy or Skunk Blue, and Graphite text on Signal Orange. On Off White, use Slate Text for secondary copy and underlined Skunk Blue for links. Use underlined White for links on Ink Navy.</p>
-  <p><a href="/tokens/#academy-tokens">Academy token reference</a></p>
+  <p><a href="/tokens/#group-tokens">Group colour token reference</a></p>
 </section>`+
  section('Use roles, not raw values','<p><code>--sk-bg</code> is the canvas. <code>--sk-surface</code> groups content. <code>--sk-text</code> carries primary content, while <code>--sk-muted</code> supports it. <code>--sk-action</code> and <code>--sk-on-action</code> must always be used together.</p><p>Success, warning, error and focus colours have functional meaning. Keep that meaning consistent and include an icon or text label so colour is never the only cue.</p>')+
  guide('Theme and contrast',['Review text, icons, borders, hover and focus in both themes.','Target WCAG 2.2 AA: at least 4.5:1 for normal text and 3:1 for large text and required UI boundaries.','Use the stronger control border token for inputs; the subtle divider token is not an input boundary.','Do not invert photographs or brand artwork with CSS filters. Swap the approved logo asset.'])+section('Token reference',link('tokens','Inspect semantic tokens')));
@@ -153,14 +154,15 @@ guide('Chart rules',['Use bars for categorical comparisons, lines for change ove
 page('learning','Build confidence, step by step.','Consistent learning journeys across the Academy ecosystem.',
 guide('A learner journey',['Begin with a clear learning goal and a short explanation of the assessment.','Present Skunkie AI learning companion as the first personalised entry point after an authenticated Academy sign-in.','Offer an accessible alternative when the learning service is unavailable.','Show a roadmap with prerequisites, realistic effort, progress and the next useful action.','Let learners review and change their preferences; avoid labelling a person with a permanent learning type.','Keep assessment feedback useful, specific and connected to the next practice opportunity.'])+
 section('Design for real conditions','<p>Use concise pages, downloadable resources and clear save states for learners with variable connectivity. Support small screens and keyboard access. Communicate time zones for live sessions and provide explicit local times when known.</p><p>Separate learner, instructor and staff experiences through real authorised roles. Do not infer authority from a client-side dropdown.</p>')+
-section('Academy brand resources','<p><a href="/colour/#academy-palette">View the Skunkworks Academy colour palette</a></p><p><a href="https://www.skunkworksacademy.com/">Explore Skunkworks Academy ↗</a></p>'));
+section('Academy brand resources','<p>Apply the <a href="/colour/#group-palette">Skunkworks Group palette</a> to Academy courses and learning experiences.</p><p><a href="https://www.skunkworksacademy.com/">Explore Skunkworks Academy ↗</a></p>'));
 page('tokens','A shared source of truth.','Semantic tokens connect brand decisions to reusable interface code.',
 section('Token reference','<div id="token-reference"></div><p><a href="/tokens.json" download>Download machine-readable tokens ↓</a> · <a href="/tokens.css" download>Download CSS tokens ↓</a></p>')+
-`<section class="doc-section" id="academy-tokens">
-  <h2>Skunkworks Academy palette tokens</h2>
-  <p>Use these fixed colour values to assign product-specific roles. The CSS properties start with <code>--sk-academy-</code> and the JSON export lists them under <code>palettes.academy</code>.</p>
-  <div id="academy-token-reference"></div>
-  <p><a href="/colour/#academy-palette">Academy swatches and usage guidance</a></p>
+`<section class="doc-section" id="group-tokens">
+  <h2 id="academy-tokens">Skunkworks Group palette tokens</h2>
+  <p>Use <code>--sk-group-*</code> in CSS and <code>palettes.group</code> in JSON for the shared group colours. Map these fixed values to your application’s semantic roles.</p>
+  <div id="group-token-reference"></div>
+  <p class="caption">The earlier <code>--sk-academy-*</code> properties and <code>palettes.academy</code> export are compatibility aliases for the group palette.</p>
+  <p><a href="/colour/#group-palette">Group swatches and usage guidance</a></p>
 </section>`+
 section('Use a semantic role',code('.product-panel {\n  background: var(--sk-surface);\n  color: var(--sk-text);\n  padding: var(--sk-space-6);\n  border-radius: var(--sk-radius);\n}'))+
 guide('Governance',['Change token values in tokens.css and run npm run build to refresh JSON and documentation.','Treat removed or renamed tokens as breaking changes.','Use a documented product extension for additional roles instead of silently changing the master palette.','Validate every paired foreground and background in both themes.']));
