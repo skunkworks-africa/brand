@@ -2,7 +2,7 @@
 
 Public documentation: https://brand.skunkworks.africa/
 
-Skunkworks Africa's monochrome identity, semantic design tokens, framework-independent components and experience guidance. Version 1.0.0 contains 31 documentation pages plus the home page. No browser framework, remote font or analytics dependency is required.
+Skunkworks Africa's design system provides the shared Skunkworks Group colour palette, semantic design tokens, framework-independent components and experience guidance. Version 1.0.0 contains 31 documentation pages plus the home page. No browser framework, remote font or analytics dependency is required.
 
 ## Development
 
@@ -14,7 +14,7 @@ Install development dependencies with `npm install --ignore-scripts`, then `npx 
 
 - `content.mjs`: page content and navigation architecture.
 - `build.mjs`: static HTML shell and resource generation.
-- `tokens.css`: canonical light and dark tokens; JSON is derived during the build.
+- `tokens.css`: canonical light and dark tokens and the Skunkworks Group palette. The build generates the JSON export.
 - `components.css` / `components.js`: reusable component resources.
 - `styles.css` / `site.js`: documentation shell and local examples.
 

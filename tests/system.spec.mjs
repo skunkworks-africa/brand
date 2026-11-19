@@ -51,15 +51,16 @@ test('search indexes concrete design token identifiers',async({page})=>{
  await expect(page.locator('.search-result').first()).toHaveAttribute('href','/tokens/');
 });
 
-test('Academy swatches fit mobile, copy hex and keep their colours when switching themes',async({page,context})=>{
+test('group swatches copy hex, fit mobile and support earlier token names and links',async({page,context})=>{
  await context.grantPermissions(['clipboard-read','clipboard-write']);
  await page.setViewportSize({width:320,height:900});
  await page.emulateMedia({colorScheme:'light'});
- await page.goto('/colour/#academy-palette');
+ await page.goto('/colour/#group-palette');
  await requiredOnly(page);
- const palette=page.locator('#academy-palette');
+ const palette=page.locator('#group-palette');
  const skunkBlue=palette.getByRole('button',{name:/Skunk Blue/});
  await expect(page.getByRole('heading',{name:'The core palette'})).toBeVisible();
+ await expect(page.locator(':target')).toContainText('Skunkworks Group palette');
  await expect(palette.getByRole('button')).toHaveCount(8);
  await expect(skunkBlue).toContainText('RGB 30, 107, 208');
  await expect(skunkBlue.locator('span')).toHaveCSS('background-color','rgb(30, 107, 208)');
@@ -69,8 +70,17 @@ test('Academy swatches fit mobile, copy hex and keep their colours when switchin
  await expect.poll(()=>page.evaluate(()=>navigator.clipboard.readText())).toBe('#1E6BD0');
  await page.getByRole('button',{name:'Switch to dark theme'}).click();
  await expect(skunkBlue.locator('span')).toHaveCSS('background-color','rgb(30, 107, 208)');
+ expect(await page.evaluate(()=>{
+  const style=getComputedStyle(document.documentElement);
+  return ['--sk-group-skunk-blue','--sk-academy-skunk-blue'].map(name=>style.getPropertyValue(name).trim());
+ })).toEqual(['#1E6BD0','#1E6BD0']);
 
- await palette.getByRole('link',{name:'Academy token reference'}).click();
- await expect(page).toHaveURL(/\/tokens\/#academy-tokens$/);
- await expect(page.getByRole('row',{name:/--sk-academy-skunk-blue/})).toContainText('#1E6BD0');
+ await page.goto('/colour/#academy-palette');
+ await expect(page.locator(':target')).toHaveText('Skunkworks Group palette');
+ await palette.getByRole('link',{name:'Group colour token reference'}).click();
+ await expect(page).toHaveURL(/\/tokens\/#group-tokens$/);
+ await expect(page.getByRole('row',{name:/--sk-group-skunk-blue/})).toContainText('#1E6BD0');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+ await page.goto('/tokens/#academy-tokens');
+ await expect(page.locator(':target')).toHaveText('Skunkworks Group palette tokens');
 });
