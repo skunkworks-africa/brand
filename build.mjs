@@ -1,6 +1,6 @@
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
-import {pages,groups} from './content.mjs';
+import {pages,groups,renderAcademySwatches} from './content.mjs';
 const root=fileURLToPath(new URL('.',import.meta.url));
 const escape=s=>s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const icon=(name)=>{
@@ -18,20 +18,40 @@ function shell(slug,title,description,body){return `<!doctype html><html lang="e
 // CSS is the canonical source of token values; derive JSON to prevent drift.
 const css=await readFile(root+'tokens.css','utf8');
 function parse(block){return Object.fromEntries([...block.matchAll(/--sk-([\w-]+):\s*([^;]+);/g)].map(m=>[m[1],m[2].trim()]));}
-const light=parse(css.split(":root[data-theme='dark']")[0]);
+const light={};
+const academy={};
+const academyPrefix='academy-';
+for(const [name,value] of Object.entries(parse(css.split(":root[data-theme='dark']")[0]))){
+  if(name.startsWith(academyPrefix)) academy[name.slice(academyPrefix.length)]=value;
+  else light[name]=value;
+}
 const dark={...light,...parse(css.split(":root[data-theme='dark']")[1].split('@media')[0])};
-const tokens={version:'1.0.0',source:'tokens.css',themes:{light,dark}};
+const tokens={version:'1.0.0',source:'tokens.css',themes:{light,dark},palettes:{academy}};
 await writeFile(root+'tokens.json',JSON.stringify(tokens,null,2)+'\n');
 const table=`<div class="sk-table-wrap" tabindex="0" role="region" aria-label="Scrollable table"><table class="sk-table"><caption>Token values generated from tokens.css</caption><thead><tr><th scope="col">Token</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead><tbody>${Object.entries(light).map(([k,v])=>`<tr><th scope="row"><code>--sk-${k}</code></th><td><code>${escape(v)}</code></td><td><code>${escape(dark[k])}</code></td></tr>`).join('')}</tbody></table></div>`;
+const academyTable=`<div class="sk-table-wrap" tabindex="0" role="region" aria-label="Scrollable Academy palette tokens">
+  <table class="sk-table">
+    <caption>Fixed Academy colour values</caption>
+    <thead><tr><th scope="col">CSS custom property</th><th scope="col">Hex value</th></tr></thead>
+    <tbody>${Object.entries(academy).map(([name,value])=>`<tr><th scope="row"><code>--sk-${academyPrefix}${name}</code></th><td><code>${escape(value)}</code></td></tr>`).join('')}</tbody>
+  </table>
+</div>`;
+const academySwatches=renderAcademySwatches(academy);
+const renderedPages=pages.map(page=>({
+  ...page,
+  body:page.body
+    .replace('<div id="token-reference"></div>',table)
+    .replace('<div id="academy-token-reference"></div>',academyTable)
+    .replace('<div id="academy-swatches"></div>',academySwatches)
+}));
 await writeFile(root+'index.html',shell('home','Home','The shared design language for Skunkworks Africa. Explore foundations, reusable components and experiences built with precision.',home()));
-for(const [i,p] of pages.entries()){
+for(const [i,p] of renderedPages.entries()){
  await mkdir(root+p.slug,{recursive:true});
  const group=groups.find(([,items])=>items.some(([s])=>s===p.slug))[0];
- const body=p.body.replace('<div id="token-reference"></div>',table);
  const next=pages[i+1];
- await writeFile(root+p.slug+'/index.html',shell(p.slug,p.title,p.description,`<div class="breadcrumb"><a href="/">Design system</a><span aria-hidden="true">/</span><span>${group}</span></div><header class="doc-heading"><span class="eyebrow">${group} / 1.0</span><h1>${p.title}</h1><p>${p.description}</p></header><div class="doc-body">${body}</div>${next?`<a class="next-page" href="/${next.slug}/"><span>Up next</span><strong>${next.title} <span aria-hidden="true">→</span></strong></a>`:''}`));
+ await writeFile(root+p.slug+'/index.html',shell(p.slug,p.title,p.description,`<div class="breadcrumb"><a href="/">Design system</a><span aria-hidden="true">/</span><span>${group}</span></div><header class="doc-heading"><span class="eyebrow">${group} / 1.0</span><h1>${p.title}</h1><p>${p.description}</p></header><div class="doc-body">${p.body}</div>${next?`<a class="next-page" href="/${next.slug}/"><span>Up next</span><strong>${next.title} <span aria-hidden="true">→</span></strong></a>`:''}`));
 }
-await writeFile(root+'search-index.json',JSON.stringify(pages.map(p=>({title:p.title,label:groups.flatMap(([,i])=>i).find(([s])=>s===p.slug)[1],url:`/${p.slug}/`,description:p.description,text:(p.body.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ')+(p.slug==='tokens'?' '+Object.keys(light).map(k=>'--sk-'+k).join(' '):'')).slice(0,8000)}))));
+await writeFile(root+'search-index.json',JSON.stringify(renderedPages.map(p=>({title:p.title,label:groups.flatMap(([,i])=>i).find(([s])=>s===p.slug)[1],url:`/${p.slug}/`,description:p.description,text:p.body.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').slice(0,8000)}))));
 await writeFile(root+'sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${['',...pages.map(p=>p.slug+'/')].map(p=>`<url><loc>https://brand.skunkworks.africa/${p}</loc></url>`).join('')}</urlset>`);
 await writeFile(root+'robots.txt','User-agent: *\nAllow: /\nSitemap: https://brand.skunkworks.africa/sitemap.xml\n');
 await writeFile(root+'404.html',shell('404','Page not found','Find your way back to the Skunkworks Design System.','<header class="doc-heading"><span class="eyebrow">404 / A different direction</span><h1>Let’s get you back on track.</h1><p>This page has moved or does not exist. Search the system or return to the home page.</p><a class="sk-button" href="/">Back to the system →</a></header>'));

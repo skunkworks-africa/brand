@@ -50,3 +50,27 @@ test('search indexes concrete design token identifiers',async({page})=>{
  await page.getByRole('searchbox',{name:'Search documentation'}).fill('--sk-danger');
  await expect(page.locator('.search-result').first()).toHaveAttribute('href','/tokens/');
 });
+
+test('Academy swatches fit mobile, copy hex and keep their colours when switching themes',async({page,context})=>{
+ await context.grantPermissions(['clipboard-read','clipboard-write']);
+ await page.setViewportSize({width:320,height:900});
+ await page.emulateMedia({colorScheme:'light'});
+ await page.goto('/colour/#academy-palette');
+ await requiredOnly(page);
+ const palette=page.locator('#academy-palette');
+ const skunkBlue=palette.getByRole('button',{name:/Skunk Blue/});
+ await expect(page.getByRole('heading',{name:'The core palette'})).toBeVisible();
+ await expect(palette.getByRole('button')).toHaveCount(8);
+ await expect(skunkBlue).toContainText('RGB 30, 107, 208');
+ await expect(skunkBlue.locator('span')).toHaveCSS('background-color','rgb(30, 107, 208)');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+
+ await skunkBlue.press('Enter');
+ await expect.poll(()=>page.evaluate(()=>navigator.clipboard.readText())).toBe('#1E6BD0');
+ await page.getByRole('button',{name:'Switch to dark theme'}).click();
+ await expect(skunkBlue.locator('span')).toHaveCSS('background-color','rgb(30, 107, 208)');
+
+ await palette.getByRole('link',{name:'Academy token reference'}).click();
+ await expect(page).toHaveURL(/\/tokens\/#academy-tokens$/);
+ await expect(page.getByRole('row',{name:/--sk-academy-skunk-blue/})).toContainText('#1E6BD0');
+});

@@ -21,10 +21,21 @@ function contrast(a,b){const values=[luminance(a),luminance(b)].sort((a,b)=>b-a)
 for(const [name,t] of Object.entries(tokens.themes)){
  for(const [fg,bg,min] of [['text','bg',4.5],['muted','bg',4.5],['muted','surface',4.5],['on-action','action',4.5],['control-border','bg',3],['focus','bg',3],['danger','bg',4.5],['success','bg',4.5]])assert(contrast(t[fg],t[bg])>=min,`${name} contrast: ${fg}/${bg}`);
 }
+const academy=tokens.palettes.academy;
+for(const [foreground,background] of [
+ ['white','ink-navy'],
+ ['white','skunk-blue'],
+ ['graphite','signal-orange'],
+ ['graphite','off-white'],
+ ['slate-text','off-white'],
+ ['skunk-blue','off-white']
+]){
+ assert(contrast(academy[foreground],academy[background])>=4.5,`Academy text contrast: ${foreground}/${background}`);
+}
 const search=JSON.parse(await readFile(root+'search-index.json','utf8'));assert.equal(search.length,pages.length);
 const tokenSearchEntry=search.find(item=>item.url==='/tokens/');
 assert(tokenSearchEntry,'Token reference missing from search index');
-for(const token of ['--sk-danger','--sk-space-16','--sk-control-border'])
+for(const token of ['--sk-danger','--sk-space-16','--sk-control-border','--sk-academy-ink-navy'])
  assert(tokenSearchEntry.text.includes(token),'Token not searchable: '+token);
 assert.equal((await readFile(root+'CNAME','utf8')).trim(),'brand.skunkworks.africa');
-console.log(`PASS: ${routes.length} pages, local links, unique IDs, ARIA references, search coverage and semantic contrast in both themes.`);
+console.log(`PASS: ${routes.length} pages, local links, unique IDs, ARIA references, search coverage and contrast for both themes and the Academy palette.`);

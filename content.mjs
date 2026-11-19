@@ -4,6 +4,44 @@ const list=items=>`<ul>${items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
 const code=s=>`<div class="code-block"><button class="copy-code" type="button">Copy code</button><pre tabindex="0" aria-label="Code example"><code>${s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')}</code></pre></div>`;
 const demo=(name,html,notes)=>`${section('Interactive example',`<div class="demo" aria-label="${name} example">${html}</div><p class="caption">${notes}</p>`)}${section('Code',code(html))}`;
 const guide=(title,items)=>section(title,list(items));
+function swatch(name,value,background=value,rgb){
+  return `<button class="swatch" type="button" data-copy="${value}"><span style="background:${background}"></span><strong>${name}</strong><code>${value}</code>${rgb ? `<code class="swatch-rgb">RGB ${rgb}</code>` : ''}<small>Copy value ↗</small></button>`;
+}
+
+const academyColourGroups=[
+  ['Primary colours', [
+    ['ink-navy','Ink Navy','Dark hero backgrounds, portals and learning management systems.'],
+    ['skunk-blue','Skunk Blue','Primary digital accent for calls to action, links and active states. Use the approved blue mark on dark surfaces.'],
+    ['signal-orange','Signal Orange','Dividers, alerts, campaign accents and emphasis.'],
+    ['white','White','Open space, reversed marks, and document and course content surfaces.']
+  ]],
+  ['Supporting neutrals', [
+    ['off-white','Off White','Secondary backgrounds for courses and documents.'],
+    ['graphite','Graphite','Body text and dark interface surfaces.'],
+    ['steel-gray','Steel Gray','Subtle dividers and decorative borders.'],
+    ['slate-text','Slate Text','Secondary text on light surfaces.']
+  ]]
+];
+
+export function renderAcademySwatches(palette){
+  return academyColourGroups.map(([heading,colours])=>{
+    const cards=colours.map(([token,name,usage])=>{
+      const value=palette[token];
+      if (!/^#[\da-f]{6}$/i.test(value)) throw new Error(`Invalid Academy colour token --sk-academy-${token}`);
+      const rgb=value.slice(1).match(/../g).map(channel=>parseInt(channel,16)).join(', ');
+      return `<div>${swatch(name,value,`var(--sk-academy-${token})`,rgb)}<p>${usage}</p></div>`;
+    }).join('');
+    return `<h3>${heading}</h3><div class="academy-swatches">${cards}</div>`;
+  }).join('');
+}
+
+const academyUsage=[
+  [70,'off-white','White / Off White','Main learning surfaces, course pages and proposal bodies.'],
+  [20,'ink-navy','Ink Navy / Graphite','Text, dark interface surfaces and hero backgrounds.'],
+  [8,'skunk-blue','Skunk Blue','Calls to action, links, active states and brand highlights.'],
+  [2,'signal-orange','Signal Orange','Dividers, alerts and campaign accents.']
+];
+
 export const groups=[
   ['Getting started',[['overview','About the system'],['designing','Start designing'],['developing','Start developing']]],
   ['Brand',[['identity','Identity & principles'],['logos','Logo library'],['voice','Voice & content']]],
@@ -36,8 +74,19 @@ page('logos','Recognisable at every scale.','Approved master marks, purposeful p
 page('voice','Confident. Clear. Human.','Content is part of the interface. Help people act with understanding.',
  section('Write for the task','<p>Lead with what the person needs to know or do. Use active verbs, short sentences and familiar words. Explain a technical term when the audience may not know it.</p><div class="comparison"><article><h3>Use</h3><p>“Your application was saved. You can continue later.”</p><p>“We couldn’t upload the file. Try a PDF smaller than 10 MB.”</p></article><article><h3>Avoid</h3><p>“Submission transaction executed successfully.”</p><p>“An unexpected error occurred.”</p></article></div>')+
  guide('Content rules',['Use South African English for the default locale; use explicit regional formats where the audience needs them.','Write action labels that describe the result: “Save application”, “Download tokens”, “Create account”.','Use sentence case. Keep product names and acronyms consistent.','Pair errors with a concrete recovery action and retain the person’s input.','Use “Skunkie AI learning companion” for the Academy companion.','Provide reviewed European Portuguese (pt-PT), Afrikaans and other regional translations when required; never leave mixed-language screens.']));
-page('colour','Colour with a purpose.','A neutral core, semantic roles and paired light and dark themes.',
- section('The core palette',`<div class="swatch-grid">${[['White','#FFFFFF'],['Black','#000000'],['Surface','#F2F2F2'],['Text','#111111'],['Muted','#595959']].map(([n,v])=>`<button class="swatch" type="button" data-copy="${v}"><span style="background:${v}"></span><strong>${n}</strong><code>${v}</code><small>Copy value ↗</small></button>`).join('')}</div>`)+
+page('colour','Colour with a purpose.','The core palette, paired light and dark themes, and the Skunkworks Academy palette.',
+ section('The core palette',`<div class="swatch-grid">${[['White','#FFFFFF'],['Black','#000000'],['Surface','#F2F2F2'],['Text','#111111'],['Muted','#595959']].map(([name,value])=>swatch(name,value)).join('')}</div>`)+
+ `<section class="doc-section" id="academy-palette">
+  <h2>Skunkworks Academy palette</h2>
+  <p>Use this palette for Academy learning experiences, course materials and branded documents. Select a swatch to copy its exact hex value.</p>
+  <div id="academy-swatches"></div>
+  <h3>Colour usage ratio</h3>
+  <div class="academy-ratio-bar" aria-hidden="true">${academyUsage.map(([share,token])=>`<span style="width:${share}%;background:var(--sk-academy-${token})"></span>`).join('')}</div>
+  <dl class="academy-ratio-key">${academyUsage.map(([share,,name,usage])=>`<div><dt>${share}% · ${name}</dt><dd>${usage}</dd></div>`).join('')}</dl>
+  <h3>Text and background pairings</h3>
+  <p>Use White text on Ink Navy or Skunk Blue, and Graphite text on Signal Orange. On Off White, use Slate Text for secondary copy and underlined Skunk Blue for links. Use underlined White for links on Ink Navy.</p>
+  <p><a href="/tokens/#academy-tokens">Academy token reference</a></p>
+</section>`+
  section('Use roles, not raw values','<p><code>--sk-bg</code> is the canvas. <code>--sk-surface</code> groups content. <code>--sk-text</code> carries primary content, while <code>--sk-muted</code> supports it. <code>--sk-action</code> and <code>--sk-on-action</code> must always be used together.</p><p>Success, warning, error and focus colours have functional meaning. Keep that meaning consistent and include an icon or text label so colour is never the only cue.</p>')+
  guide('Theme and contrast',['Review text, icons, borders, hover and focus in both themes.','Target WCAG 2.2 AA: at least 4.5:1 for normal text and 3:1 for large text and required UI boundaries.','Use the stronger control border token for inputs; the subtle divider token is not an input boundary.','Do not invert photographs or brand artwork with CSS filters. Swap the approved logo asset.'])+section('Token reference',link('tokens','Inspect semantic tokens')));
 page('typography','Type that does the work.','Expressive introductions. Precise information. A readable rhythm throughout.',
@@ -103,9 +152,16 @@ section('A labelled example','<figure class="bar-chart"><figcaption>Illustrative
 guide('Chart rules',['Use bars for categorical comparisons, lines for change over time, and tables when exact values matter.','Name the measure, unit, time range, data source and last update.','Start quantitative bar axes at zero. Explain any transformed or truncated scale.','Distinguish series with labels, patterns or shapes as well as colour.','Provide a textual summary and access to the underlying data.','Do not use generated images for data charts.']));
 page('learning','Build confidence, step by step.','Consistent learning journeys across the Academy ecosystem.',
 guide('A learner journey',['Begin with a clear learning goal and a short explanation of the assessment.','Present Skunkie AI learning companion as the first personalised entry point after an authenticated Academy sign-in.','Offer an accessible alternative when the learning service is unavailable.','Show a roadmap with prerequisites, realistic effort, progress and the next useful action.','Let learners review and change their preferences; avoid labelling a person with a permanent learning type.','Keep assessment feedback useful, specific and connected to the next practice opportunity.'])+
-section('Design for real conditions','<p>Use concise pages, downloadable resources and clear save states for learners with variable connectivity. Support small screens and keyboard access. Communicate time zones for live sessions and provide explicit local times when known.</p><p>Separate learner, instructor and staff experiences through real authorised roles. Do not infer authority from a client-side dropdown.</p>')+section('Academy destination','<p><a href="https://www.skunkworksacademy.com/">Explore Skunkworks Academy ↗</a></p>'));
+section('Design for real conditions','<p>Use concise pages, downloadable resources and clear save states for learners with variable connectivity. Support small screens and keyboard access. Communicate time zones for live sessions and provide explicit local times when known.</p><p>Separate learner, instructor and staff experiences through real authorised roles. Do not infer authority from a client-side dropdown.</p>')+
+section('Academy brand resources','<p><a href="/colour/#academy-palette">View the Skunkworks Academy colour palette</a></p><p><a href="https://www.skunkworksacademy.com/">Explore Skunkworks Academy ↗</a></p>'));
 page('tokens','A shared source of truth.','Semantic tokens connect brand decisions to reusable interface code.',
 section('Token reference','<div id="token-reference"></div><p><a href="/tokens.json" download>Download machine-readable tokens ↓</a> · <a href="/tokens.css" download>Download CSS tokens ↓</a></p>')+
+`<section class="doc-section" id="academy-tokens">
+  <h2>Skunkworks Academy palette tokens</h2>
+  <p>Use these fixed colour values to assign product-specific roles. The CSS properties start with <code>--sk-academy-</code> and the JSON export lists them under <code>palettes.academy</code>.</p>
+  <div id="academy-token-reference"></div>
+  <p><a href="/colour/#academy-palette">Academy swatches and usage guidance</a></p>
+</section>`+
 section('Use a semantic role',code('.product-panel {\n  background: var(--sk-surface);\n  color: var(--sk-text);\n  padding: var(--sk-space-6);\n  border-radius: var(--sk-radius);\n}'))+
 guide('Governance',['Change token values in tokens.css and run npm run build to refresh JSON and documentation.','Treat removed or renamed tokens as breaking changes.','Use a documented product extension for additional roles instead of silently changing the master palette.','Validate every paired foreground and background in both themes.']));
 page('downloads','Ready to build.','Versioned source resources for the first Skunkworks Design System release.',
