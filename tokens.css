@@ -12,15 +12,25 @@
   --sk-space-6: 24px; --sk-space-8: 32px; --sk-space-12: 48px; --sk-space-16: 64px;
   --sk-radius: 8px; --sk-duration: 160ms; --sk-ease: cubic-bezier(.2,0,.2,1);
 
-  /* Skunkworks Academy brand colours, shared across themes. */
-  --sk-academy-ink-navy: #03033A;
-  --sk-academy-skunk-blue: #1E6BD0;
-  --sk-academy-signal-orange: #F24208;
-  --sk-academy-white: #FFFFFF;
-  --sk-academy-off-white: #F7F9FC;
-  --sk-academy-graphite: #15171A;
-  --sk-academy-steel-gray: #D8DEE8;
-  --sk-academy-slate-text: #5A6472;
+  /* Skunkworks Group brand colours, shared across themes. */
+  --sk-group-ink-navy: #03033A;
+  --sk-group-skunk-blue: #1E6BD0;
+  --sk-group-signal-orange: #F24208;
+  --sk-group-white: #FFFFFF;
+  --sk-group-off-white: #F7F9FC;
+  --sk-group-graphite: #15171A;
+  --sk-group-steel-gray: #D8DEE8;
+  --sk-group-slate-text: #5A6472;
+
+  /* Compatibility aliases for consumers of the original palette. */
+  --sk-academy-ink-navy: var(--sk-group-ink-navy);
+  --sk-academy-skunk-blue: var(--sk-group-skunk-blue);
+  --sk-academy-signal-orange: var(--sk-group-signal-orange);
+  --sk-academy-white: var(--sk-group-white);
+  --sk-academy-off-white: var(--sk-group-off-white);
+  --sk-academy-graphite: var(--sk-group-graphite);
+  --sk-academy-steel-gray: var(--sk-group-steel-gray);
+  --sk-academy-slate-text: var(--sk-group-slate-text);
 }
 :root[data-theme='dark'] {
   color-scheme: dark;
