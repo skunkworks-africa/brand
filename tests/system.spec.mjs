@@ -27,6 +27,39 @@ test('dialog closes with Escape and returns focus',async({page})=>{
 test('form validation and table empty state are useful',async({page})=>{
  await page.goto('/forms/');await requiredOnly(page);await page.getByRole('button',{name:'Validate example'}).click();await expect(page.locator('#example-name')).toHaveAttribute('aria-invalid','true');await page.locator('#example-name').fill('Example Learner');await page.getByRole('button',{name:'Validate example'}).click();await expect(page.locator('#form-result')).toContainText('No data was sent');await page.goto('/tables/');await page.locator('#table-filter').fill('nothingmatches');await expect(page.locator('#table-status')).toContainText('No resources match');await page.locator('#table-filter').fill('');await page.locator('#table-sort').click();await expect(page.locator('th[aria-sort]')).toHaveAttribute('aria-sort','ascending');
 });
+test('contact form explains errors, preserves entries and supports recovery',async({page})=>{
+ await page.goto('/forms/');await requiredOnly(page);
+ const form=page.locator('#contact-example');
+ await form.locator('#contact-phone').fill('+27 11 555 0123');
+ await form.locator('#contact-message').fill('Please contact me about training.');
+ await form.getByRole('button',{name:'Check contact details'}).click();
+ await expect(form.locator('#contact-errors')).toBeFocused();
+ await expect(form.locator('#contact-errors li')).toHaveCount(2);
+ await expect(form.locator('#contact-name')).toHaveAttribute('aria-invalid','true');
+ await form.locator('#contact-errors').getByRole('link',{name:'Enter your name.'}).click();
+ await expect(form.locator('#contact-name')).toBeFocused();
+ await form.locator('#contact-name').fill('Example Learner');
+ await form.locator('#contact-email').fill('not-an-email');
+ await expect(form.locator('#contact-errors li')).toHaveCount(1);
+ await expect(form.locator('#contact-email-error')).toBeVisible();
+ await form.locator('#contact-email').fill('learner@example.com');
+ await expect(form.locator('#contact-errors')).toBeHidden();
+ await expect(form.locator('#contact-phone')).toHaveValue('+27 11 555 0123');
+ await expect(form.locator('#contact-message')).toHaveValue('Please contact me about training.');
+ await form.getByRole('button',{name:'Check contact details'}).click();
+ await expect(form.locator('#contact-result')).toHaveText('Details validated. No data was sent.');
+ await expect(form.locator('#contact-name')).not.toHaveAttribute('aria-invalid');
+});
+test('contact demo cannot submit information without JavaScript',async({browser})=>{
+ const context=await browser.newContext({javaScriptEnabled:false});
+ const page=await context.newPage();
+ await page.goto('/forms/');
+ await expect(page.locator('#contact-example button[type=submit]')).toBeDisabled();
+ await page.locator('#contact-name').fill('Example Learner');
+ await page.locator('#contact-name').press('Enter');
+ await expect(page).toHaveURL(/\/forms\/$/);
+ await context.close();
+});
 test('account menu uses real external destinations',async({page})=>{
  await page.goto('/');await requiredOnly(page);await page.getByLabel('Account and employee login').click();await expect(page.getByRole('link',{name:'Employee / Microsoft 365'})).toHaveAttribute('href','https://myapps.microsoft.com/');await page.keyboard.press('Escape');await expect(page.locator('.account')).not.toHaveAttribute('open','');
 });
