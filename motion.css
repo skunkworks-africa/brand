@@ -1,0 +1,70 @@
+/* Load after tokens.css and components.css. Apply these effects to individual components. */
+
+.sk-motion-spinner:not([hidden]) {
+  display: inline-block;
+  flex: none;
+  box-sizing: border-box;
+  inline-size: 1em;
+  block-size: 1em;
+  border: 2px solid var(--sk-control-border);
+  border-inline-end-color: var(--sk-text);
+  border-radius: 50%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sk-motion-press {
+    transition: transform var(--sk-motion-duration-quick) var(--sk-motion-ease-standard);
+  }
+
+  .sk-motion-press:active {
+    transform: translateY(1px);
+  }
+
+  .sk-motion-enter {
+    animation: sk-motion-appear var(--sk-motion-duration-standard) var(--sk-motion-ease-enter);
+  }
+
+  details:not([open]) > .sk-motion-enter {
+    animation: none;
+  }
+
+  .sk-motion-dialog[open] {
+    animation: sk-motion-dialog-in var(--sk-motion-duration-expressive) var(--sk-motion-ease-enter);
+  }
+
+  .sk-motion-spinner:not([hidden]) {
+    animation: sk-motion-spin var(--sk-motion-duration-indicator) var(--sk-motion-ease-linear) 2;
+  }
+}
+
+[data-sk-motion='reduced'] .sk-motion-press {
+  transition: none;
+  transform: none;
+}
+
+[data-sk-motion='reduced'] :is(.sk-motion-enter, .sk-motion-dialog[open]) {
+  animation: none;
+}
+
+[data-sk-motion='reduced'] .sk-motion-spinner:not([hidden]) {
+  display: none;
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-motion-spinner:not([hidden]) {
+    display: none;
+  }
+}
+
+@keyframes sk-motion-appear {
+  from { opacity: .82; }
+}
+
+@keyframes sk-motion-dialog-in {
+  from { transform: translateY(var(--sk-motion-distance-overlay)); }
+}
+
+@keyframes sk-motion-spin {
+  to { transform: rotate(1turn); }
+}
