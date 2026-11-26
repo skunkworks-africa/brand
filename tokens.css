@@ -12,6 +12,18 @@
   --sk-space-6: 24px; --sk-space-8: 32px; --sk-space-12: 48px; --sk-space-16: 64px;
   --sk-radius: 8px; --sk-duration: 160ms; --sk-ease: cubic-bezier(.2,0,.2,1);
 
+  /* Motion scales for new components. Existing duration and easing values are retained. */
+  --sk-motion-duration-instant: 0ms;
+  --sk-motion-duration-quick: 100ms;
+  --sk-motion-duration-standard: 160ms;
+  --sk-motion-duration-expressive: 240ms;
+  --sk-motion-duration-indicator: 800ms;
+  --sk-motion-ease-standard: cubic-bezier(.2,0,.2,1);
+  --sk-motion-ease-enter: cubic-bezier(0,0,.2,1);
+  --sk-motion-ease-exit: cubic-bezier(.4,0,1,1);
+  --sk-motion-ease-linear: linear;
+  --sk-motion-distance-overlay: 8px;
+
   /* Skunkworks Group brand colours, shared across themes. */
   --sk-group-ink-navy: #03033A;
   --sk-group-skunk-blue: #1E6BD0;
