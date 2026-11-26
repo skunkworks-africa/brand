@@ -12,7 +12,8 @@ test('card previews show status, accept keyboard selection and keep actions sepa
   await status.getByLabel('Preview status').selectOption('needs-attention');
   await expect(status.locator('#card-state-badge')).toHaveText('Needs attention');
   await expect(status.getByRole('progressbar')).toHaveAttribute('value', '3');
-  await expect(status.getByText('Ask the team for the workload inventory to resume the review.')).toBeVisible();
+  await expect(status.getByText('Ask the team for the workload inventory to resume the review.', {exact: true})).toBeVisible();
+  await expect(status.getByRole('status')).toContainText('Needs attention. 3 of 5 checks complete.');
   await status.getByLabel('Preview status').selectOption('complete');
   await expect(status.getByRole('progressbar')).toHaveAttribute('value', '5');
   await expect(status.getByText('5 of 5 checks complete', {exact: true})).toBeVisible();
