@@ -53,12 +53,32 @@ test('contact form explains errors, preserves entries and supports recovery',asy
 test('contact demo cannot submit information without JavaScript',async({browser})=>{
  const context=await browser.newContext({javaScriptEnabled:false});
  const page=await context.newPage();
- await page.goto('/forms/');
- await expect(page.locator('#contact-example button[type=submit]')).toBeDisabled();
- await page.locator('#contact-name').fill('Example Learner');
- await page.locator('#contact-name').press('Enter');
- await expect(page).toHaveURL(/\/forms\/$/);
+ for(const route of ['/forms/','/lead-capture/']){
+  await page.goto(route);
+  await expect(page.locator('[data-contact-example] button[type=submit]')).toBeDisabled();
+  await page.locator('#contact-name').fill('Example Learner');
+  await page.locator('#contact-name').press('Enter');
+  await expect(page).toHaveURL(new RegExp(route+'$'));
+ }
  await context.close();
+});
+test('lead capture pattern supports recovery without submitting data',async({page})=>{
+ const sent=[];page.on('request',req=>{if(req.method()!=='GET')sent.push(req.url());});
+ await page.setViewportSize({width:320,height:900});
+ await page.goto('/lead-capture/');await requiredOnly(page);
+ const form=page.locator('#lead-example');
+ await form.locator('#lead-message').fill('We need cloud training.');
+ await form.getByRole('button',{name:'Check enquiry details'}).click();
+ await expect(form.locator('#contact-errors')).toBeFocused();
+ await expect(form.locator('#contact-errors li')).toHaveCount(2);
+ await form.locator('#contact-name').fill('Example Learner');
+ await form.locator('#contact-email').fill('learner@example.com');
+ await expect(form.locator('#contact-errors')).toBeHidden();
+ await expect(form.locator('#lead-message')).toHaveValue('We need cloud training.');
+ await form.getByRole('button',{name:'Check enquiry details'}).click();
+ await expect(form.locator('#contact-result')).toHaveText('Details validated. No data was sent.');
+ expect(sent).toEqual([]);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 });
 test('account menu uses real external destinations',async({page})=>{
  await page.goto('/');await requiredOnly(page);await page.getByLabel('Account and employee login').click();await expect(page.getByRole('link',{name:'Employee / Microsoft 365'})).toHaveAttribute('href','https://myapps.microsoft.com/');await page.keyboard.press('Escape');await expect(page.locator('.account')).not.toHaveAttribute('open','');
@@ -67,7 +87,7 @@ for(const width of [320,390,768,1280,1920])test(`responsive layout and mobile na
  await page.setViewportSize({width,height:900});await page.goto('/');await requiredOnly(page);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);if(width<1000){await page.getByRole('button',{name:'Open navigation'}).click();await expect(page.locator('#mobile-navigation')).toBeVisible();await page.locator('#mobile-navigation').getByRole('link',{name:'Buttons',exact:true}).click();await expect(page).toHaveURL(/buttons/);}else{await expect(page.locator('.sidebar')).toBeVisible();}await page.screenshot({path:`test-results/home-${width}.png`,fullPage:true});
 });
 for(const theme of ['light','dark'])test(`automated accessibility checks in ${theme} theme`,async({page})=>{
- await page.emulateMedia({colorScheme:theme});for(const route of ['/','/forms/','/tabs/','/tables/','/colour/','/tokens/']){await page.goto(route);if(await page.locator('#consent-banner').isVisible())await requiredOnly(page);await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});const issues=await page.evaluate(async()=>{const r=await axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return r.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)}));});expect(issues,route).toEqual([]);}
+ await page.emulateMedia({colorScheme:theme});for(const route of ['/','/forms/','/lead-capture/','/tabs/','/tables/','/colour/','/tokens/']){await page.goto(route);if(await page.locator('#consent-banner').isVisible())await requiredOnly(page);await page.addScriptTag({path:require.resolve('axe-core/axe.min.js')});const issues=await page.evaluate(async()=>{const r=await axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}});return r.violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>n.target)}));});expect(issues,route).toEqual([]);}
 });
 
 test('standalone components keep input controls within their container',async({page})=>{

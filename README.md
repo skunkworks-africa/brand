@@ -2,7 +2,7 @@
 
 Public documentation: https://brand.skunkworks.africa/
 
-Skunkworks Africa's design system provides the shared Skunkworks Group colour palette, semantic design tokens, framework-independent components and experience guidance. Version 1.0.0 contains 31 documentation pages plus the home page. No browser framework, remote font or analytics dependency is required.
+Skunkworks Africa's design system provides the shared Skunkworks Group colour palette, semantic design tokens, framework-independent components and experience guidance. It contains 32 documentation pages plus the home page. No browser framework, remote font or analytics dependency is required.
 
 ## Development
 
